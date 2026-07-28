@@ -47,45 +47,53 @@
           </div>
         </div>
 
-        <div class="nutrition-grid mb-6">
+        <div class="nutrition-grid mb-7">
           <div class="nutrition-item">
-            <v-img
-              :src="require('@/assets/img/icons/Carbs.png')"
-              class="nutrition-icon"
-              width="28"
-              height="28"
-              contain
-            />
+            <div class="nutrition-icon-box">
+              <v-img
+                :src="require('@/assets/img/icons/Carbs.png')"
+                class="nutrition-icon-img"
+                width="28"
+                height="28"
+                contain
+              />
+            </div>
             <span class="nutrition-value">65g carbs</span>
           </div>
           <div class="nutrition-item">
-            <v-img
-              :src="require('@/assets/img/icons/Ellipse 77.png')"
-              class="nutrition-icon"
-              width="28"
-              height="28"
-              contain
-            />
+            <div class="nutrition-icon-box">
+              <v-img
+                :src="require('@/assets/img/icons/Ellipse 77.png')"
+                class="nutrition-icon-img"
+                width="28"
+                height="28"
+                contain
+              />
+            </div>
             <span class="nutrition-value">27g proteins</span>
           </div>
           <div class="nutrition-item">
-            <v-img
-              :src="require('@/assets/img/icons/Calories.png')"
-              class="nutrition-icon"
-              width="28"
-              height="28"
-              contain
-            />
+            <div class="nutrition-icon-box">
+              <v-img
+                :src="require('@/assets/img/icons/Calories.png')"
+                class="nutrition-icon-img"
+                width="28"
+                height="28"
+                contain
+              />
+            </div>
             <span class="nutrition-value">120 Kcal</span>
           </div>
           <div class="nutrition-item">
-            <v-img
-              :src="require('@/assets/img/icons/Fats.png')"
-              class="nutrition-icon"
-              width="28"
-              height="28"
-              contain
-            />
+            <div class="nutrition-icon-box">
+              <v-img
+                :src="require('@/assets/img/icons/Fats.png')"
+                class="nutrition-icon-img"
+                width="28"
+                height="28"
+                contain
+              />
+            </div>
             <span class="nutrition-value">91g fats</span>
           </div>
         </div>
@@ -108,9 +116,9 @@
         </div>
 
         <div v-if="activeTab === 'ingredients'">
-          <div class="d-flex align-center mb-4">
+          <div class="ingredients-header mb-5">
             <h2 class="section-header mb-0">Ingredients</h2>
-            <span class="item-count ml-2">6 Item</span>
+            <span class="item-count">6 Item</span>
           </div>
 
           <div class="ingredients-list mb-6">
@@ -119,12 +127,10 @@
               :key="index"
               class="ingredient-item"
             >
-              <div class="ingredient-icon-wrap">
+              <div class="ingredient-icon-box">
                 <v-img
                   :src="require(`@/assets/img/ingredients/${ingredient.icon}`)"
-                  class="ingredient-icon"
-                  width="40"
-                  height="40"
+                  class="ingredient-icon-img"
                   contain
                 />
               </div>
@@ -156,7 +162,7 @@
         <div class="creator-section mb-6">
           <h2 class="section-header mb-4">Creator</h2>
           <div class="creator-card">
-            <v-avatar class="creator-avatar" size="52">
+            <v-avatar class="creator-avatar" size="48">
               <v-img :src="require('@/assets/img/creator.png')" cover />
             </v-avatar>
             <div class="creator-info ml-3">
@@ -178,14 +184,14 @@
               :key="index"
               class="related-card"
             >
-              <v-img
-                :src="require(`@/assets/img/recipes/${related.image}`)"
-                class="related-img"
-                height="90"
-                width="100"
-                cover
-              />
-              <p class="related-title mt-2 mb-0">{{ related.title }}</p>
+              <div class="related-img-wrap">
+                <v-img
+                  :src="require(`@/assets/img/recipes/${related.image}`)"
+                  class="related-img"
+                  contain
+                />
+              </div>
+              <p class="related-title mt-3 mb-0">{{ related.title }}</p>
             </div>
           </div>
         </div>
@@ -320,15 +326,15 @@ export default {
 .recipe-desc {
   font-family: 'Open Sans', sans-serif;
   font-size: 16px;
-  font-weight: 500;
-  line-height: 135%;
+  font-weight: 400;
+  line-height: 145%;
   letter-spacing: 0%;
   color: #748189;
 }
 
 .view-more-link {
   color: #0A2533;
-  font-weight: 800;
+  font-weight: 600;
   text-decoration: none;
   line-height: 135%;
   letter-spacing: 0%;
@@ -341,7 +347,7 @@ export default {
   justify-content: center;
   padding: 8px 12px;
   border-radius: 12px;
-  background: #F0F7F7;
+  // background: #F0F7F7;
   min-width: 64px;
 }
 
@@ -360,22 +366,32 @@ export default {
 .nutrition-grid {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 14px;
+  gap: 28px 48px;
 }
 
 .nutrition-item {
   display: flex;
   align-items: center;
-  background: #F0F7F7;
-  border-radius: 14px;
-  padding: 14px 16px;
-  gap: 12px;
+  background: transparent;
+  border-radius: 0;
+  padding: 0;
+  gap: 14px;
 }
 
-.nutrition-icon {
+.nutrition-icon-box {
   flex: 0 0 auto;
-  width: 28px !important;
-  height: 28px !important;
+  width: 40px !important;
+  height: 40px !important;
+  background: #eef2f6;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.nutrition-icon-img {
+  width: 24px !important;
+  height: 24px !important;
 }
 
 .nutrition-value {
@@ -405,7 +421,7 @@ export default {
   transition: all 0.25s ease;
 
   &.active {
-    background: #0D4C4B;
+    background: #042628;
     color: white;
     box-shadow: 0 2px 12px rgba(13, 76, 75, 0.2);
   }
@@ -413,8 +429,9 @@ export default {
 
 .section-header {
   font-family: 'Sofia Pro', 'Open Sans', sans-serif;
-  font-weight: 700;
-  font-size: 22px;
+  font-weight: 800;
+  font-size: 20px;
+  line-height: 135%;
   color: #1A2B3C;
 }
 
@@ -427,32 +444,34 @@ export default {
 .ingredients-list {
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  gap: 20px;
+  margin-top: 0;
 }
 
 .ingredient-item {
   display: flex;
   align-items: center;
-  background: #F8F9FA;
-  border-radius: 18px;
-  padding: 14px 18px;
+  background: white;
+  border-radius: 12px;
+  padding: 16px 22px;
+  box-shadow: 0 6px 24px rgba(150, 160, 180, 0.12);
 }
 
-.ingredient-icon-wrap {
+.ingredient-icon-box {
   flex: 0 0 auto;
-  width: 56px;
-  height: 56px;
-  background: white;
-  border-radius: 14px;
+  width: 48px;
+  height: 48px;
+  background: #eef2f6;
+  border-radius: 12px;
   display: flex;
   align-items: center;
   justify-content: center;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+  box-shadow: none;
 }
 
-.ingredient-icon {
-  width: 40px !important;
-  height: 40px !important;
+.ingredient-icon-img {
+  width: 32px !important;
+  height: 32px !important;
 }
 
 .ingredient-name {
@@ -538,7 +557,7 @@ export default {
   flex-direction: row;
   overflow-x: auto;
   overflow-y: hidden;
-  gap: 18px;
+  gap: 24px;
   padding-bottom: 8px;
 
   &::-webkit-scrollbar {
@@ -549,15 +568,34 @@ export default {
 
 .related-card {
   flex: 0 0 auto;
-  width: 110px;
+  width: 100px;
+  height: 136px;
   cursor: pointer;
+  background: white;
+  border-radius: 10px;
+  // padding: 24px 20px 28px 20px;
+  box-shadow: 0 8px 32px rgba(140, 150, 170, 0.15);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  box-sizing: border-box;
+}
+
+.related-img-wrap {
+  width: 84px;
+  height: 84px;
+  border-radius: 10px;
+  overflow: hidden;
+  background: #2a3a4a;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .related-img {
-  border-radius: 18px;
-  width: 110px !important;
-  height: 90px !important;
-  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
+  border-radius: 0;
+  width: 100% !important;
+  height: 100% !important;
 }
 
 .related-title {
@@ -565,5 +603,8 @@ export default {
   font-weight: 600;
   font-size: 15px;
   color: #1A2B3C;
+  width: 100%;
+  text-align: left;
+  padding-left: 4px;
 }
 </style>
