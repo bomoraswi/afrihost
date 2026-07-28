@@ -65,7 +65,7 @@
       </div>
 
       <!-- category -->
-      <div class="category-section mb-8">
+      <!-- <div class="category-section mb-8"> -->
        <v-row class="section-header-row mb-1">
         <v-col cols="12" class="d-flex align-center justify-space-between pa-0">
           <h2 class="section-title font-h3 font-weight-bold mb-0">
@@ -75,12 +75,14 @@
         </v-col>
       </v-row>
 
+      <div class="category-section mb-6">
         <div class="category-scroll">
           <div
             v-for="(category, index) in categories"
             :key="index"
             class="category-item"
             :class="{ active: category.active }"
+            @click="selectCategory(index)"
           >
             <span class="category-name">{{ category.name }}</span>
           </div>
@@ -93,20 +95,20 @@
           <h2 class="section-title font-h3 font-weight-bold mb-0">
             Popular Recipes
           </h2>
-          <a href="#" class="see-all-link">See All</a>
+          <a href="#" class="see-all-link" @click.prevent="seeAllPopular">See All</a>
         </v-col>
       </v-row>
 
       <div class="popular-section mb-6">
         <div class="popular-scroll">
           <div
-            v-for="(recipe, index) in popularRecipes"
+            v-for="(recipe, index) in filteredPopularRecipes"
             :key="index"
             class="popular-card-wrapper"
           >
             <v-card class="recipe-card" flat>
               <v-img
-                :src="require(`@/assets/img/recipes/${recipe.image}`)"
+                :src="recipe.imageUrl"
                 class="recipe-img"
                 height="128"
                 width="168"
@@ -176,7 +178,10 @@ export default {
       { name: "Breakfast", active: true },
       { name: "Lunch", active: false },
       { name: "Dinner", active: false },
+      { name: "Dessert", active: false },
     ],
+    activeCategoryIndex: 0,
+    seeAllActive: false,
     featuredRecipes: [
       {
         image: "cardbg.png",
@@ -193,26 +198,75 @@ export default {
         time: "35 Min",
       },
     ],
-    popularRecipes: [
-      {
-        image: "recipe1.png",
-        title: "Healthy Taco Salad with fresh vegetable",
-        kcal: "120 Kcal",
-        time: "20 Min",
-      },
-      {
-        image: "recipe5.jpg",
-        title: "Japanese-style Pancakes Recipe",
-        kcal: "64 Kcal",
-        time: "12 Min",
-      },
-    ],
+    popularRecipes: [],
   }),
 
+  computed: {
+    activeCategoryName() {
+      return this.categories[this.activeCategoryIndex].name.toLowerCase();
+    },
+    normalizedActiveCategory() {
+      const name = this.activeCategoryName;
+      if (name === "dessert") return "desert";
+      return name;
+    },
+    filteredPopularRecipes() {
+      if (!this.popularRecipes || !this.popularRecipes.length) return [];
+      if (this.seeAllActive) return this.popularRecipes;
+      const filtered = this.popularRecipes.filter(
+        (r) => r.category === this.normalizedActiveCategory
+      );
+      return filtered.length ? filtered : this.popularRecipes;
+    },
+  },
+
   methods: {
+    seeAllPopular() {
+      this.seeAllActive = true;
+      this.activeCategoryIndex = -1;
+      this.categories = this.categories.map((c) => ({ ...c, active: false }));
+    },
+    selectCategory(index) {
+      this.seeAllActive = false;
+      this.activeCategoryIndex = index;
+      this.categories = this.categories.map((c, i) => ({
+        ...c,
+        active: i === index,
+      }));
+    },
+    sanitizeUrl(url) {
+      if (!url) return "";
+      return url.replace(/`/g, "").trim();
+    },
+    formatCookingTime(seconds) {
+      const mins = Math.round(seconds / 60);
+      return `${mins} Min`;
+    },
+    getKcalFromNutrients(nutrients) {
+      const kcalNutrient = (nutrients || []).find((n) => n.label === "Kcal");
+      if (kcalNutrient) return `${kcalNutrient.amount} Kcal`;
+      return "0 Kcal";
+    },
+    pickBestImage(images) {
+      if (!images || !images.length) return "";
+      const preferOrder = ["image/jpg", "image/jpeg", "image/webp", "image/avif"];
+      for (const mime of preferOrder) {
+        const match = images.find((i) => i.mime === mime);
+        if (match) return this.sanitizeUrl(match.url);
+      }
+      return this.sanitizeUrl(images[0].url);
+    },
     async loadRecipes() {
       const response = await apiService.getRecipes();
       this.recipes = response.data.recipes;
+      this.popularRecipes = this.recipes.map((r) => ({
+        id: r.id,
+        category: r.category,
+        title: r.title,
+        imageUrl: this.pickBestImage(r.images),
+        time: this.formatCookingTime(r.meta.cooking_time),
+        kcal: this.getKcalFromNutrients(r.meta.nutrients),
+      }));
     },
     handleNavigate(destination) {
       console.log("Navigate to:", destination);
@@ -220,7 +274,7 @@ export default {
   },
 
   mounted() {
-    // this.loadRecipes();
+    this.loadRecipes();
   },
 };
 </script>

@@ -35,66 +35,34 @@
       <div class="pa-5 pb-0">
         <div class="d-flex align-start justify-space-between mb-3">
           <div>
-            <h3 class="recipe-title mb-2">Healthy Taco Salad</h3>
+            <h3 class="recipe-title mb-2">{{ dynamicTitle }}</h3>
             <p class="recipe-desc">
-              This Healthy Taco Salad is the universal delight of taco night
+              This {{ dynamicTitle }} is the universal delight of taco night
               <a href="#" class="view-more-link">View More</a>
             </p>
           </div>
           <div class="time-badge ">
             <v-icon small class="time-icon">mdi-clock-outline</v-icon>
-            <span class="time-text">15 Min</span>
+            <span class="time-text">{{ formattedCookingTime }}</span>
           </div>
         </div>
 
         <div class="nutrition-grid mb-7">
-          <div class="nutrition-item">
+          <div
+            v-for="(nutrient, index) in nutrientsDisplay"
+            :key="index"
+            class="nutrition-item"
+          >
             <div class="nutrition-icon-box">
               <v-img
-                :src="require('@/assets/img/icons/Carbs.png')"
+                :src="require(`@/assets/img/icons/${nutrient.icon}`)"
                 class="nutrition-icon-img"
                 width="28"
                 height="28"
                 contain
               />
             </div>
-            <span class="nutrition-value">65g carbs</span>
-          </div>
-          <div class="nutrition-item">
-            <div class="nutrition-icon-box">
-              <v-img
-                :src="require('@/assets/img/icons/Ellipse 77.png')"
-                class="nutrition-icon-img"
-                width="28"
-                height="28"
-                contain
-              />
-            </div>
-            <span class="nutrition-value">27g proteins</span>
-          </div>
-          <div class="nutrition-item">
-            <div class="nutrition-icon-box">
-              <v-img
-                :src="require('@/assets/img/icons/Calories.png')"
-                class="nutrition-icon-img"
-                width="28"
-                height="28"
-                contain
-              />
-            </div>
-            <span class="nutrition-value">120 Kcal</span>
-          </div>
-          <div class="nutrition-item">
-            <div class="nutrition-icon-box">
-              <v-img
-                :src="require('@/assets/img/icons/Fats.png')"
-                class="nutrition-icon-img"
-                width="28"
-                height="28"
-                contain
-              />
-            </div>
-            <span class="nutrition-value">91g fats</span>
+            <span class="nutrition-value">{{ nutrient.text }}</span>
           </div>
         </div>
 
@@ -180,13 +148,13 @@
 
           <div class="related-scroll">
             <div
-              v-for="(related, index) in relatedRecipes"
+              v-for="(related, index) in relatedRecipesDisplay"
               :key="index"
               class="related-card"
             >
               <div class="related-img-wrap">
                 <v-img
-                  :src="require(`@/assets/img/recipes/${related.image}`)"
+                  :src="related.imageUrl"
                   class="related-img"
                   contain
                 />
@@ -211,6 +179,7 @@ export default {
     loading: false,
     id: 1,
     activeTab: "ingredients",
+    allRecipes: [],
     ingredients: [
       { name: "Tortilla Chips", quantity: 2, icon: "PngItem_267538 1.png" },
       { name: "Avocado", quantity: 1, icon: "PngItem_1252977 1.png" },
@@ -224,14 +193,92 @@ export default {
       "Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.",
       "Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.",
     ],
-    relatedRecipes: [
-      { image: "recipe1.png", title: "Egg & Avo..." },
-      { image: "recipe2.png", title: "Bowl of r..." },
-      { image: "recipe3.png", title: "Chicken S..." },
-    ],
+    relatedRecipes: [],
+    nutrientsIconMap: {
+      Carbs: "Carbs.png",
+      Proteins: "Ellipse 77.png",
+      Kcal: "Calories.png",
+      Fats: "Fats.png",
+    },
   }),
 
+  computed: {
+    dynamicTitle() {
+      return this.recipe ? this.recipe.title : "Healthy Taco Salad";
+    },
+    formattedCookingTime() {
+      if (this.recipe && this.recipe.meta && this.recipe.meta.cooking_time) {
+        return this.formatCookingTime(this.recipe.meta.cooking_time);
+      }
+      return "15 Min";
+    },
+    nutrientsDisplay() {
+      if (!this.recipe || !this.recipe.meta || !this.recipe.meta.nutrients) {
+        return [
+          { icon: "Carbs.png", text: "65g carbs" },
+          { icon: "Ellipse 77.png", text: "27g proteins" },
+          { icon: "Calories.png", text: "120 Kcal" },
+          { icon: "Fats.png", text: "91g fats" },
+        ];
+      }
+      const order = ["Carbs", "Proteins", "Kcal", "Fats"];
+      return order.map((label) => {
+        const nutrient = this.recipe.meta.nutrients.find(
+          (n) => n.label === label
+        );
+        if (!nutrient) {
+          return { icon: this.nutrientsIconMap[label] || "Carbs.png", text: label };
+        }
+        const valueText = nutrient.unit
+          ? `${nutrient.amount}${nutrient.unit} ${label.toLowerCase()}`
+          : `${nutrient.amount} ${label}`;
+        return {
+          icon: this.nutrientsIconMap[label] || "Carbs.png",
+          text: valueText,
+        };
+      });
+    },
+    relatedRecipesDisplay() {
+      if (this.allRecipes && this.allRecipes.length) {
+        return this.allRecipes
+          .filter((r) => r.id !== this.id)
+          .slice(0, 3)
+          .map((r) => ({
+            id: r.id,
+            title:
+              r.title.length > 11 ? `${r.title.slice(0, 11)}...` : r.title,
+            imageUrl: this.pickBestImage(r.images),
+          }));
+      }
+      return [
+        { image: "recipe1.png", title: "Egg & Avo..." },
+        { image: "recipe2.png", title: "Bowl of r..." },
+        { image: "recipe3.png", title: "Chicken S..." },
+      ].map((r) => ({
+        ...r,
+        imageUrl: require(`@/assets/img/recipes/${r.image}`),
+      }));
+    },
+  },
+
   methods: {
+    sanitizeUrl(url) {
+      if (!url) return "";
+      return url.replace(/`/g, "").trim();
+    },
+    formatCookingTime(seconds) {
+      const mins = Math.round(seconds / 60);
+      return `${mins} Min`;
+    },
+    pickBestImage(images) {
+      if (!images || !images.length) return "";
+      const preferOrder = ["image/jpg", "image/jpeg", "image/webp", "image/avif"];
+      for (const mime of preferOrder) {
+        const match = images.find((i) => i.mime === mime);
+        if (match) return this.sanitizeUrl(match.url);
+      }
+      return this.sanitizeUrl(images[0].url);
+    },
     async loadRecipe() {
       try {
         this.loading = true;
@@ -243,10 +290,18 @@ export default {
         this.loading = false;
       }
     },
+    async loadAllRecipes() {
+      try {
+        const response = await recipeService.getRecipes();
+        this.allRecipes = response.data.recipes;
+      } catch (error) {
+        console.error("Failed to load all recipes", error);
+      }
+    },
   },
 
-  mounted() {
-    // this.loadRecipe();
+  async mounted() {
+    await Promise.all([this.loadRecipe(), this.loadAllRecipes()]);
   },
 };
 </script>
