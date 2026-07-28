@@ -1,14 +1,14 @@
 <template>
   <div class="recipe-list-wrapper">
-    <v-container class="pa-0">
-  
+    <TopHeader class="top-header-section" />
 
-      <v-row class="section-header-row mb-4">
-        <v-col cols="12" class="d-flex align-center justify-space-between pa-0">
+    <v-container class="pa-0 px-5">
+
+
+      <div>
           <h2 class="section-title font-h3 font-weight-bold mb-0">Featured</h2>
-          <a href="#" class="see-all-link">See All</a>
-        </v-col>
-      </v-row>
+
+      </div>
 
       <!-- featured -->
       <div class="featured-section mb-8">
@@ -22,20 +22,22 @@
               <v-img
                 :src="require(`@/assets/img/${featured.image}`)"
                 class="featured-img"
-         
                 cover
               >
                 <template v-slot:placeholder>
-                  <v-row class="fill-height ma-0" align="center" justify="center">
-                    <v-progress-circular indeterminate color="grey lighten-5"></v-progress-circular>
+                  <v-row
+                    class="fill-height ma-0"
+                    align="center"
+                    justify="center"
+                  >
+                    <v-progress-circular
+                      indeterminate
+                      color="grey lighten-5"
+                    ></v-progress-circular>
                   </v-row>
                 </template>
                 <div class="featured-overlay">
-                  <v-btn
-                    icon
-                    class="heart-btn"
-                    color="white"
-                  >
+                  <v-btn icon class="heart-btn" color="white">
                     <v-icon>mdi-heart-outline</v-icon>
                   </v-btn>
                 </div>
@@ -59,11 +61,12 @@
         </div>
       </div>
 
-
       <!-- Popular Recipes -->
       <v-row class="section-header-row mb-4">
         <v-col cols="12" class="d-flex align-center justify-space-between pa-0">
-          <h2 class="section-title font-h3 font-weight-bold mb-0">Popular Recipes</h2>
+          <h2 class="section-title font-h3 font-weight-bold mb-0">
+            Popular Recipes
+          </h2>
           <a href="#" class="see-all-link">See All</a>
         </v-col>
       </v-row>
@@ -76,7 +79,6 @@
             class="popular-card-wrapper"
           >
             <v-card class="recipe-card" flat>
-              
               <v-img
                 :src="require(`@/assets/img/recipes/${recipe.image}`)"
                 class="recipe-img"
@@ -85,16 +87,19 @@
                 cover
               >
                 <template v-slot:placeholder>
-                  <v-row class="fill-height ma-0" align="center" justify="center">
-                    <v-progress-circular indeterminate color="grey lighten-5"></v-progress-circular>
+                  <v-row
+                    class="fill-height ma-0"
+                    align="center"
+                    justify="center"
+                  >
+                    <v-progress-circular
+                      indeterminate
+                      color="grey lighten-5"
+                    ></v-progress-circular>
                   </v-row>
                 </template>
                 <div class="recipe-overlay">
-                  <v-btn
-                    icon
-                    class="heart-btn-small"
-                    color="white"
-                  >
+                  <v-btn icon class="heart-btn-small" color="white">
                     <v-icon small>mdi-heart-outline</v-icon>
                   </v-btn>
                 </div>
@@ -105,12 +110,16 @@
                 </h6>
                 <div class="d-flex align-center recipe-meta-small">
                   <span class="d-flex align-center mr-3">
-                    <v-icon x-small class="mr-1 meta-icon-small">mdi-fire</v-icon>
+                    <v-icon x-small class="mr-1 meta-icon-small"
+                      >mdi-fire</v-icon
+                    >
                     {{ recipe.kcal }}
                   </span>
                   <span class="meta-dot">•</span>
                   <span class="d-flex align-center ml-3">
-                    <v-icon x-small class="mr-1 meta-icon-small">mdi-clock-outline</v-icon>
+                    <v-icon x-small class="mr-1 meta-icon-small"
+                      >mdi-clock-outline</v-icon
+                    >
                     {{ recipe.time }}
                   </span>
                 </div>
@@ -121,49 +130,26 @@
       </div>
     </v-container>
 
-    <v-bottom-navigation
-      class="bottom-nav"
-      absolute
-      hide-on-scroll
-      color="white"
-    >
-      <v-btn class="nav-btn" value="home">
-        <v-icon class="nav-icon active">mdi-home</v-icon>
-      </v-btn>
-      <v-btn class="nav-btn" value="search">
-        <v-icon class="nav-icon">mdi-magnify</v-icon>
-      </v-btn>
-      <div class="center-btn-wrapper">
-        <v-btn
-          fab
-          color="teal darken-4"
-          class="center-fab"
-        >
-          <v-icon large class="text-white">mdi-chef-hat</v-icon>
-        </v-btn>
-      </div>
-      <v-btn class="nav-btn" value="notifications">
-        <v-icon class="nav-icon">mdi-bell-outline</v-icon>
-      </v-btn>
-      <v-btn class="nav-btn" value="profile">
-        <v-icon class="nav-icon">mdi-account-outline</v-icon>
-      </v-btn>
-      <div class="active-indicator"></div>
-    </v-bottom-navigation>
+    <BottomNav @navigate="handleNavigate" />
   </div>
 </template>
 
 <script>
 import apiService from "@/api/apiService";
+import TopHeader from "@/components/TopHeader";
+import BottomNav from "@/components/BottomNav";
 
 export default {
+  components: {
+    TopHeader,
+    BottomNav,
+  },
   data: () => ({
     recipes: [],
     categories: [
       { name: "Breakfast", active: true },
-      { name: "Lunch",  active: false },
-      { name: "Dinner",  active: false },
-
+      { name: "Lunch", active: false },
+      { name: "Dinner", active: false },
     ],
     featuredRecipes: [
       { image: "featuredCard1.png" },
@@ -177,12 +163,11 @@ export default {
         time: "20 Min",
       },
       {
-        image: "recipe1.png",
+        image: "recipe5.jpg",
         title: "Japanese-style Pancakes Recipe",
         kcal: "64 Kcal",
         time: "12 Min",
       },
-     
     ],
   }),
 
@@ -190,6 +175,9 @@ export default {
     async loadRecipes() {
       const response = await apiService.getRecipes();
       this.recipes = response.data.recipes;
+    },
+    handleNavigate(destination) {
+      console.log("Navigate to:", destination);
     },
   },
 
@@ -202,10 +190,18 @@ export default {
 <style lang="scss" scoped>
 .recipe-list-wrapper {
   min-height: 100vh;
-  padding-bottom: 100px;
+  padding-bottom: 140px;
   background-color: #f8f9fa;
   position: relative;
   overflow-x: hidden;
+  width: 100%;
+}
+
+.top-header-section {
+  width: 100%;
+  margin: 0;
+  padding: 0;
+  display: block;
 }
 
 .category-section {
@@ -250,7 +246,7 @@ export default {
   }
 
   &.active {
-    background: #5DB9B4;
+    background: #5db9b4;
 
     .category-name {
       color: white;
@@ -269,9 +265,9 @@ export default {
 }
 
 .category-name {
-  font-family: 'Sofia Pro', 'Open Sans', sans-serif;
+  font-family: "Sofia Pro", "Open Sans", sans-serif;
   font-size: 15px;
-  color: #1A2B3C;
+  color: #1a2b3c;
   font-weight: 500;
   white-space: nowrap;
 }
@@ -282,14 +278,15 @@ export default {
 }
 
 .section-title {
-  color: #1A2B3C;
-  font-family: 'Sofia Pro', 'Open Sans', sans-serif;
+  color: #1a2b3c;
+  font-family: "Sofia Pro", "Open Sans", sans-serif;
   margin: 0;
+  font-size: 20px;
 }
 
 .see-all-link {
-  color: #5DB9B4;
-  font-family: 'Open Sans', sans-serif;
+  color: #5db9b4;
+  font-family: "Open Sans", sans-serif;
   font-size: 18px;
   font-weight: 600;
   text-decoration: none;
@@ -352,7 +349,7 @@ export default {
   padding: 0 !important;
 
   ::v-deep .v-icon {
-    color: #5DB9B4;
+    color: #5db9b4;
   }
 }
 
@@ -392,7 +389,7 @@ export default {
 }
 
 .recipe-img {
-  border-radius: 20px 20px 0 0;
+  border-radius: 20px 20px 20px 20px;
   margin: 0 auto;
 }
 
@@ -412,13 +409,13 @@ export default {
   padding: 0 !important;
 
   ::v-deep .v-icon {
-    color: #5DB9B4;
+    color: #5db9b4;
   }
 }
 
 .recipe-title {
-  color: #0A2533;
-  font-family: 'Sofia Pro', 'Open Sans', sans-serif;
+  color: #0a2533;
+  font-family: "Sofia Pro", "Open Sans", sans-serif;
   font-weight: 700;
   font-size: 16px;
   line-height: 135%;
@@ -431,77 +428,17 @@ export default {
 }
 
 .recipe-meta-small {
-  color: #6B7C8E;
+  color: #6b7c8e;
   font-size: 12px;
-  font-family: 'Open Sans', sans-serif;
+  font-family: "Open Sans", sans-serif;
 }
 
 .meta-icon-small {
-  color: #5DB9B4;
+  color: #5db9b4;
 }
 
 .meta-dot {
-  color: #6B7C8E;
+  color: #6b7c8e;
   font-size: 14px;
-}
-
-.bottom-nav {
-  position: fixed !important;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  height: 80px;
-  box-shadow: 0 -4px 24px rgba(0, 0, 0, 0.08) !important;
-  border-radius: 32px 32px 0 0 !important;
-  overflow: visible !important;
-  z-index: 100;
-  display: flex;
-  align-items: center;
-  justify-content: space-around;
-  padding: 0 16px;
-}
-
-.nav-btn {
-  background: transparent !important;
-  box-shadow: none !important;
-  width: 56px;
-  height: 56px;
-  margin: 0;
-}
-
-.nav-icon {
-  color: #B0BEC5;
-  font-size: 28px !important;
-
-  &.active {
-    color: #5DB9B4;
-  }
-}
-
-.center-btn-wrapper {
-  position: relative;
-  z-index: 10;
-  margin-top: -32px;
-}
-
-.center-fab {
-  width: 68px !important;
-  height: 68px !important;
-  background-color: #0D4C4B !important;
-  box-shadow: 0 8px 24px rgba(13, 76, 75, 0.35) !important;
-
-  ::v-deep .v-icon {
-    font-size: 32px !important;
-  }
-}
-
-.active-indicator {
-  position: absolute;
-  bottom: 6px;
-  left: calc(10% - 20px);
-  width: 40px;
-  height: 4px;
-  background-color: #5DB9B4;
-  border-radius: 2px;
 }
 </style>

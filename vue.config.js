@@ -10,4 +10,14 @@ module.exports = {
       },
     },
   },
+
+  devServer: {
+    proxy: {
+      "/assessments": {
+        target: "https://www.afrihost.com",
+        changeOrigin: true,
+        secure: true,
+      },
+    },
+  },
 };
