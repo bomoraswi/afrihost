@@ -1,6 +1,6 @@
 <template>
   <div >
-    <div class="top-header-card mb-6">
+    <div class="top-header-card">
       <div class="header-content">
         <div class="greeting-section">
           <div class="greeting-row">
@@ -86,7 +86,7 @@ export default {
 .top-header-card {
   width: 100%;
   background: transparent;
-  padding: 28px 0 20px 0;
+  padding: 28px 0 0px 0;
 }
 
 .header-content {
@@ -111,7 +111,7 @@ export default {
   align-items: center;
   justify-content: flex-start;
   gap: 10px;
-  margin-bottom: 18px;
+  margin-bottom: 7px;
 }
 
 .greeting-icon {

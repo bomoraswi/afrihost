@@ -5,13 +5,12 @@
     <v-container class="pa-0 px-5">
 
 
-      <div>
+      <div class="mt-5">
           <h2 class="section-title font-h3 font-weight-bold mb-0">Featured</h2>
-
       </div>
 
       <!-- featured -->
-      <div class="featured-section mb-8">
+      <div class=" mb-8">
         <div class="featured-scroll">
           <div
             v-for="(featured, index) in featuredRecipes"
@@ -36,10 +35,28 @@
                     ></v-progress-circular>
                   </v-row>
                 </template>
-                <div class="featured-overlay">
-                  <v-btn icon class="heart-btn" color="white">
-                    <v-icon>mdi-heart-outline</v-icon>
-                  </v-btn>
+
+                <div class="featured-content">
+          
+                  <div class="featured-body">
+                    <h3 class="featured-title">{{ featured.title }}</h3>
+                  </div>
+
+                  <div class="featured-footer">
+                    <div class="chef-info">
+                      <v-img
+                        :src="require(`@/assets/img/${featured.chefAvatar}`)"
+                        class="chef-avatar"
+                  
+                        contain
+                      />
+                      <span class="chef-name">{{ featured.chefName }}</span>
+                    </div>
+                    <div class="time-info">
+                      <v-icon class="time-icon">mdi-clock-outline</v-icon>
+                      <span class="time-text">{{ featured.time }}</span>
+                    </div>
+                  </div>
                 </div>
               </v-img>
             </v-card>
@@ -49,6 +66,15 @@
 
       <!-- category -->
       <div class="category-section mb-8">
+       <v-row class="section-header-row mb-1">
+        <v-col cols="12" class="d-flex align-center justify-space-between pa-0">
+          <h2 class="section-title font-h3 font-weight-bold mb-0">
+            Category
+          </h2>
+          <a href="#" class="see-all-link">See All</a>
+        </v-col>
+      </v-row>
+
         <div class="category-scroll">
           <div
             v-for="(category, index) in categories"
@@ -62,7 +88,7 @@
       </div>
 
       <!-- Popular Recipes -->
-      <v-row class="section-header-row mb-4">
+      <v-row class="section-header-row mb-1">
         <v-col cols="12" class="d-flex align-center justify-space-between pa-0">
           <h2 class="section-title font-h3 font-weight-bold mb-0">
             Popular Recipes
@@ -152,8 +178,20 @@ export default {
       { name: "Dinner", active: false },
     ],
     featuredRecipes: [
-      { image: "featuredCard1.png" },
-      { image: "featuredCard1.png" },
+      {
+        image: "cardbg.png",
+        title: "Asian white noodle with extra seafood",
+        chefName: "James Spader",
+        chefAvatar: "creator.png",
+        time: "20 Min",
+      },
+      {
+        image: "cardbg.png",
+        title: "Creamy mushroom soup with truffle oil",
+        chefName: "Sarah Chen",
+        chefAvatar: "creator.png",
+        time: "35 Min",
+      },
     ],
     popularRecipes: [
       {
@@ -266,10 +304,9 @@ export default {
 
 .category-name {
   font-family: "Sofia Pro", "Open Sans", sans-serif;
-  font-size: 15px;
+  font-size: 16px;
   color: #1a2b3c;
   font-weight: 500;
-  white-space: nowrap;
 }
 
 .section-header-row {
@@ -280,15 +317,14 @@ export default {
 .section-title {
   color: #1a2b3c;
   font-family: "Sofia Pro", "Open Sans", sans-serif;
-  margin: 0;
   font-size: 20px;
 }
 
 .see-all-link {
   color: #5db9b4;
   font-family: "Open Sans", sans-serif;
-  font-size: 18px;
-  font-weight: 600;
+  font-size: 14px;
+  font-weight: 800;
   text-decoration: none;
 
   &:hover {
@@ -296,9 +332,9 @@ export default {
   }
 }
 
-.featured-section {
-  padding: 0;
-}
+// .featured-section {
+//   padding: 0;
+// }
 
 .featured-scroll {
   display: flex;
@@ -318,7 +354,7 @@ export default {
 
 .featured-card-wrapper {
   flex: 0 0 auto;
-  width: 265px;
+  width: 280px;
 }
 
 .featured-card {
@@ -330,13 +366,99 @@ export default {
 }
 
 .featured-img {
-  border-radius: 20px !important;
+  height: 210px !important;
+  width: 280px !important;
+}
+
+.featured-content {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  padding: 20px;
+  box-sizing: border-box;
 }
 
 .featured-overlay {
-  position: absolute;
-  top: 12px;
-  right: 12px;
+  position: relative;
+  display: flex;
+  justify-content: flex-end;
+  align-items: flex-start;
+  width: 100%;
+}
+
+.featured-body {
+  flex: 1;
+  display: flex;
+  align-items: flex-end;
+  justify-content: flex-start;
+  margin-bottom: 10px;
+  width: 189px;
+}
+
+.featured-title {
+  color: white;
+  font-family: "Sofia Pro", "Open Sans", sans-serif;
+  font-weight: 700;
+  font-size: 18px;
+  line-height: 110%;
+  text-align: left;
+  overflow: hidden;
+}
+
+.featured-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  margin-bottom: 35px;
+}
+
+.chef-info {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.chef-avatar {
+  width: 20px !important;
+  height: 20px !important;
+  border-radius: 50%;
+  border: 2px solid white;
+  overflow: hidden;
+  flex-shrink: 0;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
+}
+
+.chef-name {
+  color: white;
+  font-family: "Sofia Pro", "Open Sans", sans-serif;
+  font-size: 14px;
+  font-weight: 400;
+  line-height: 145%;
+}
+
+.time-info {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.time-icon {
+  color: white;
+  font-size: 16px !important;
+}
+
+.time-text {
+  color: white;
+  font-family: "Sofia Pro", "Open Sans", sans-serif;
+  font-size: 14px;
+  font-weight: 400;
+  line-height: 145%;
 }
 
 .heart-btn {
