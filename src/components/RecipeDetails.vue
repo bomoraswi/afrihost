@@ -2,7 +2,7 @@
   <div class="recipe-details-wrapper">
     <div class="background-header">
       <v-img
-        :src="require('@/assets/img/hermes-rivera-OzBLe_Eg1mg-unsplash 1.png')"
+        :src="headerImageUrl"
         class="bg-img"
         cover
       >
@@ -12,8 +12,9 @@
               icon
               class="header-btn"
               color="white"
+              @click="goBack"
             >
-              <v-icon>mdi-close</v-icon>
+              <v-icon>mdi-arrow-left</v-icon>
             </v-btn>
             <v-btn
               icon
@@ -37,8 +38,8 @@
           <div>
             <h3 class="recipe-title mb-2">{{ dynamicTitle }}</h3>
             <p class="recipe-desc">
-              This {{ dynamicTitle }} is the universal delight of taco night
-              <a href="#" class="view-more-link">View More</a>
+              {{ dynamicDescription }}
+              <a href="#" v-if="showViewMore" class="view-more-link">View More</a>
             </p>
           </div>
           <div class="time-badge ">
@@ -86,24 +87,20 @@
         <div v-if="activeTab === 'ingredients'">
           <div class="ingredients-header mb-5">
             <h2 class="section-header mb-0">Ingredients</h2>
-            <span class="item-count">6 Item</span>
+            <span class="item-count">{{ ingredientsList.length }} Item</span>
           </div>
 
           <div class="ingredients-list mb-6">
             <div
-              v-for="(ingredient, index) in ingredients"
+              v-for="(ingredient, index) in ingredientsList"
               :key="index"
               class="ingredient-item"
             >
               <div class="ingredient-icon-box">
-                <v-img
-                  :src="require(`@/assets/img/ingredients/${ingredient.icon}`)"
-                  class="ingredient-icon-img"
-                  contain
-                />
+                <div class="ingredient-placeholder-dot"></div>
               </div>
-              <span class="ingredient-name">{{ ingredient.name }}</span>
-              <span class="ingredient-quantity">{{ ingredient.quantity }}</span>
+              <span class="ingredient-name">{{ ingredient.label }}</span>
+              <span class="ingredient-quantity">{{ ingredient.displayQuantity }}</span>
             </div>
           </div>
         </div>
@@ -111,15 +108,16 @@
         <div v-if="activeTab === 'instructions'">
           <div class="mb-4">
             <h2 class="section-header mb-2">Instructions</h2>
-            <span class="item-count instructions-time">15 min</span>
+            <span class="item-count instructions-time">{{ formattedCookingTime }}</span>
           </div>
 
           <div class="instructions-paragraphs mb-6">
             <p
-              v-for="(paragraph, index) in instructionsParagraphs"
+              v-for="(paragraph, index) in instructionsList"
               :key="index"
               class="instruction-paragraph"
             >
+              <span class="instruction-step-number">{{ index + 1 }}.</span>
               {{ paragraph }}
             </p>
           </div>
@@ -151,12 +149,13 @@
               v-for="(related, index) in relatedRecipesDisplay"
               :key="index"
               class="related-card"
+              @click="openRelatedRecipe(related)"
             >
               <div class="related-img-wrap">
                 <v-img
                   :src="related.imageUrl"
                   class="related-img"
-                  contain
+                  
                 />
               </div>
               <p class="related-title mt-3 mb-0">{{ related.title }}</p>
@@ -177,22 +176,8 @@ export default {
   data: () => ({
     recipe: null,
     loading: false,
-    id: 1,
     activeTab: "ingredients",
     allRecipes: [],
-    ingredients: [
-      { name: "Tortilla Chips", quantity: 2, icon: "PngItem_267538 1.png" },
-      { name: "Avocado", quantity: 1, icon: "PngItem_1252977 1.png" },
-      { name: "Red Cabbage", quantity: 9, icon: "PngItem_4288222 1.png" },
-      { name: "Peanuts", quantity: 1, icon: "pngwing (1).png" },
-      { name: "Red Onions", quantity: 1, icon: "pngwing.png" },
-      { name: "Fresh Cilantro", quantity: 1, icon: "PngItem_267538 1.png" },
-    ],
-    instructionsParagraphs: [
-      "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.",
-      "Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.",
-      "Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.",
-    ],
     relatedRecipes: [],
     nutrientsIconMap: {
       Carbs: "Carbs.png",
@@ -200,17 +185,71 @@ export default {
       Kcal: "Calories.png",
       Fats: "Fats.png",
     },
+    fallbackIngredients: [
+      { name: "Tortilla Chips", quantity: 2, icon: "PngItem_267538 1.png" },
+    ],
+    fallbackInstructions: [
+      "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.",
+    ],
+    fallbackImage: require("@/assets/img/hermes-rivera-OzBLe_Eg1mg-unsplash 1.png"),
   }),
 
   computed: {
+    recipeId() {
+      const fromRoute = this.$route && this.$route.params && this.$route.params.id;
+      if (fromRoute) {
+        const parsed = parseInt(fromRoute, 10);
+        if (!Number.isNaN(parsed)) return parsed;
+      }
+      return 1;
+    },
+    id() {
+      return this.recipeId;
+    },
     dynamicTitle() {
       return this.recipe ? this.recipe.title : "Healthy Taco Salad";
+    },
+    dynamicDescription() {
+      if (this.recipe && this.recipe.description) {
+        return this.recipe.description;
+      }
+      return "This Healthy Taco Salad is the universal delight of taco night";
+    },
+    showViewMore() {
+      return !(this.recipe && this.recipe.description);
+    },
+    headerImageUrl() {
+      if (this.recipe && this.recipe.images) {
+        const large = this.pickLargestImage(this.recipe.images);
+        if (large) return large;
+      }
+      return this.fallbackImage;
     },
     formattedCookingTime() {
       if (this.recipe && this.recipe.meta && this.recipe.meta.cooking_time) {
         return this.formatCookingTime(this.recipe.meta.cooking_time);
       }
       return "15 Min";
+    },
+    ingredientsList() {
+      if (this.recipe && this.recipe.ingredients && this.recipe.ingredients.length) {
+        return this.recipe.ingredients.map((ing) => ({
+          ...ing,
+          displayQuantity: this.formatIngredientQuantity(ing),
+        }));
+      }
+      return this.fallbackIngredients.map((i) => ({
+        label: i.name,
+        quantity: i.quantity,
+        unit: "",
+        displayQuantity: String(i.quantity),
+      }));
+    },
+    instructionsList() {
+      if (this.recipe && this.recipe.instructions && this.recipe.instructions.length) {
+        return this.recipe.instructions;
+      }
+      return this.fallbackInstructions;
     },
     nutrientsDisplay() {
       if (!this.recipe || !this.recipe.meta || !this.recipe.meta.nutrients) {
@@ -270,6 +309,15 @@ export default {
       const mins = Math.round(seconds / 60);
       return `${mins} Min`;
     },
+    formatIngredientQuantity(ing) {
+      if (!ing) return "";
+      const quant = ing.quantity == null ? "" : ing.quantity;
+      const unit = ing.unit || "";
+      if (quant === 0 || quant === "0") {
+        return unit || "";
+      }
+      return [quant, unit].filter((x) => x !== "" && x != null).join(" ");
+    },
     pickBestImage(images) {
       if (!images || !images.length) return "";
       const preferOrder = ["image/jpg", "image/jpeg", "image/webp", "image/avif"];
@@ -279,11 +327,36 @@ export default {
       }
       return this.sanitizeUrl(images[0].url);
     },
+    pickLargestImage(images) {
+      if (!images || !images.length) return "";
+      const preferSize = ["1024", "512", "134"];
+      const preferMime = ["image/jpg", "image/jpeg", "image/webp", "image/avif"];
+      for (const size of preferSize) {
+        for (const mime of preferMime) {
+          const match = images.find(
+            (i) => String(i.width) === size && i.mime === mime
+          );
+          if (match) return this.sanitizeUrl(match.url);
+        }
+      }
+      return this.pickBestImage(images);
+    },
+    goBack() {
+      if (this.$router) {
+        this.$router.push({ name: "RecipeList" });
+      }
+    },
+    openRelatedRecipe(related) {
+      if (this.$router && related && related.id) {
+        this.$router.push({ name: "RecipeDetails", params: { id: related.id } });
+      }
+    },
     async loadRecipe() {
       try {
         this.loading = true;
-        const response = await recipeService.getRecipeById(this.id);
-        this.recipe = response.data;
+        const response = await recipeService.getRecipeById(this.recipeId);
+        const data = response.data;
+        this.recipe = data.recipe || data;
       } catch (error) {
         console.error("Failed to load recipe", error);
       } finally {
@@ -302,6 +375,12 @@ export default {
 
   async mounted() {
     await Promise.all([this.loadRecipe(), this.loadAllRecipes()]);
+  },
+
+  watch: {
+    "$route.params.id"() {
+      this.loadRecipe();
+    },
   },
 };
 </script>
@@ -524,6 +603,13 @@ export default {
   box-shadow: none;
 }
 
+.ingredient-placeholder-dot {
+  width: 12px;
+  height: 12px;
+  background: #c6d2dd;
+  border-radius: 50%;
+}
+
 .ingredient-icon-img {
   width: 32px !important;
   height: 32px !important;
@@ -567,6 +653,13 @@ export default {
   font-weight: 500;
   margin: 0;
   letter-spacing: 0%;
+}
+
+.instruction-step-number {
+  font-family: 'Sofia Pro', 'Open Sans', sans-serif;
+  font-weight: 800;
+  color: #042628;
+  margin-right: 10px;
 }
 
 .divider-line {

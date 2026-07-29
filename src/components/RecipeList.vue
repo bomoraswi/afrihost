@@ -16,6 +16,7 @@
             v-for="(featured, index) in featuredRecipes"
             :key="index"
             class="featured-card-wrapper"
+            @click="openRecipe(featured)"
           >
             <v-card class="featured-card" flat>
               <v-img
@@ -105,6 +106,7 @@
             v-for="(recipe, index) in filteredPopularRecipes"
             :key="index"
             class="popular-card-wrapper"
+            @click="openRecipe(recipe)"
           >
             <v-card class="recipe-card" flat>
               <v-img
@@ -184,6 +186,7 @@ export default {
     seeAllActive: false,
     featuredRecipes: [
       {
+        id: 0,
         image: "cardbg.png",
         title: "Asian white noodle with extra seafood",
         chefName: "James Spader",
@@ -191,6 +194,7 @@ export default {
         time: "20 Min",
       },
       {
+        id: 0,
         image: "cardbg.png",
         title: "Creamy mushroom soup with truffle oil",
         chefName: "Sarah Chen",
@@ -267,6 +271,21 @@ export default {
         time: this.formatCookingTime(r.meta.cooking_time),
         kcal: this.getKcalFromNutrients(r.meta.nutrients),
       }));
+      if (this.recipes.length >= 2) {
+        this.featuredRecipes = this.recipes.slice(0, 2).map((r) => ({
+          id: r.id,
+          image: "cardbg.png",
+          title: r.title,
+          chefName: "James Spader",
+          chefAvatar: "creator.png",
+          time: this.formatCookingTime(r.meta.cooking_time),
+        }));
+      }
+    },
+    openRecipe(recipe) {
+      if (this.$router && recipe && recipe.id) {
+        this.$router.push({ name: "RecipeDetails", params: { id: recipe.id } });
+      }
     },
     handleNavigate(destination) {
       console.log("Navigate to:", destination);

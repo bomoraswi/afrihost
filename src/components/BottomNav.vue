@@ -4,29 +4,29 @@
       <div class="nav-items">
         <div class="nav-item-wrapper">
           <v-btn class="nav-btn" value="home" @click="$emit('navigate', 'home')">
-            <v-icon class="nav-icon active">mdi-home</v-icon>
+            <img src="@/assets/img/menu/Home.png" class="nav-img active" alt="Home" width="19" height="20" />
           </v-btn>
           <div class="active-indicator"></div>
         </div>
 
         <v-btn class="nav-btn" value="search" @click="$emit('navigate', 'search')">
-          <v-icon class="nav-icon">mdi-magnify</v-icon>
+          <img src="@/assets/img/menu/Search.png" class="nav-img" alt="Search" />
         </v-btn>
 
         <div class="center-spacer"></div>
 
         <v-btn class="nav-btn" value="notifications" @click="$emit('navigate', 'notifications')">
-          <v-icon class="nav-icon">mdi-bell-outline</v-icon>
+          <img src="@/assets/img/menu/Notification.png" class="nav-img" alt="Notifications" />
         </v-btn>
 
         <v-btn class="nav-btn" value="profile" @click="$emit('navigate', 'profile')">
-          <v-icon class="nav-icon">mdi-account-outline</v-icon>
+          <img src="@/assets/img/menu/Profile.png" class="nav-img" alt="Profile" />
         </v-btn>
       </div>
 
       <div class="center-btn-wrapper">
         <v-btn fab class="center-fab" @click="$emit('navigate', 'create')">
-          <v-icon large class="text-white">mdi-chef-hat</v-icon>
+          <img src="@/assets/img/menu/Chef.png" class="nav-img-center" alt="Create" />
         </v-btn>
       </div>
     </div>
@@ -68,7 +68,7 @@ export default {
   transform: translateX(-50%);
   width: 110px;
   height: 56px;
-  background-color: #f8f9fa;
+  background-color: #F8F9FA;
   border-bottom-left-radius: 110px;
   border-bottom-right-radius: 110px;
   z-index: 0;
@@ -106,14 +106,22 @@ export default {
   }
 }
 
-.nav-icon {
-  color: #9aa8b5;
-  font-size: 28px !important;
-  transition: color 0.2s ease;
+.nav-img {
+  width: 219x;
+  height: 20px;
+  object-fit: contain;
+  opacity: 0.55;
+  transition: opacity 0.2s ease;
 
   &.active {
-    color: #5db9b4;
+    opacity: 1;
   }
+}
+
+.nav-img-center {
+  width: 34px;
+  height: 34px;
+  object-fit: contain;
 }
 
 .center-spacer {
@@ -125,22 +133,16 @@ export default {
   top: -36px;
   left: 50%;
   transform: translateX(-50%);
-  z-index: 10;
 }
 
 .center-fab {
   width: 74px !important;
   height: 74px !important;
   background-color: #073030 !important;
-  box-shadow: 0 12px 32px rgba(7, 48, 48, 0.45) !important;
   border-radius: 50%;
 
   &:hover {
     background-color: #0a3d3c !important;
-  }
-
-  ::v-deep .v-icon {
-    font-size: 34px !important;
   }
 }
 
