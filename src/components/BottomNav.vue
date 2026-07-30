@@ -52,7 +52,7 @@ export default {
 
 .bottom-nav {
   position: relative;
-  height: 96px;
+  height: 83px;
   background: white;
   border-radius: 36px 36px 0 0;
   box-shadow: 0 -10px 40px rgba(0, 0, 0, 0.08);
