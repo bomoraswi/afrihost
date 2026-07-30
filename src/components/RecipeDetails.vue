@@ -6,6 +6,11 @@
         class="bg-img"
         cover
       >
+        <v-img
+          :src="require('@/assets/img/Rectangleoverlay.png')"
+          class="rectangle-overlay"
+          contain
+        />
         <div class="header-overlay">
           <div class="d-flex align-center justify-space-between pa-4">
             <v-btn
@@ -19,9 +24,13 @@
             <v-btn
               icon
               class="header-btn"
+              :class="{ 'is-favorite': isFavorite(id) }"
               color="white"
+              @click="toggleFavorite(id)"
             >
-              <v-icon>mdi-heart-outline</v-icon>
+              <v-icon>
+                {{ isFavorite(id) ? 'mdi-heart' : 'mdi-heart-outline' }}
+              </v-icon>
             </v-btn>
           </div>
         </div>
@@ -169,6 +178,7 @@
 
 <script>
 import recipeService from "@/api/apiService";
+import { mapGetters, mapActions } from "vuex";
 
 export default {
   name: "RecipeDetails",
@@ -195,6 +205,7 @@ export default {
   }),
 
   computed: {
+    ...mapGetters(["isFavorite"]),
     recipeId() {
       const fromRoute = this.$route && this.$route.params && this.$route.params.id;
       if (fromRoute) {
@@ -301,6 +312,7 @@ export default {
   },
 
   methods: {
+    ...mapActions(["toggleFavorite"]),
     sanitizeUrl(url) {
       if (!url) return "";
       return url.replace(/`/g, "").trim();
@@ -402,6 +414,16 @@ export default {
   width: 100%;
 }
 
+.rectangle-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  width: 100% !important;
+  height: 220px !important;
+  z-index: 5;
+}
+
 .header-overlay {
   position: absolute;
   top: 0;
@@ -421,6 +443,13 @@ export default {
 
   ::v-deep .v-icon {
     color: #1A2B3C;
+    transition: all 0.2s ease;
+  }
+
+  &.is-favorite {
+    ::v-deep .v-icon {
+      color: #e74c3c;
+    }
   }
 }
 

@@ -2,10 +2,10 @@
   <div class="recipe-list-wrapper">
     <TopHeader class="top-header-section" />
 
-    <v-container class="pa-0 px-5">
+    <v-container class="pa-0 px-5 content-below-header">
 
 
-      <div class="mt-5">
+      <div>
           <h2 class="section-title font-h3 font-weight-bold mb-0">Featured</h2>
       </div>
 
@@ -129,8 +129,16 @@
                   </v-row>
                 </template>
                 <div class="recipe-overlay">
-                  <v-btn icon class="heart-btn-small" color="white">
-                    <v-icon small>mdi-heart-outline</v-icon>
+                  <v-btn
+                    icon
+                    class="heart-btn-small"
+                    :class="{ 'is-favorite': isFavorite(recipe.id) }"
+                    color="white"
+                    @click.stop="toggleFavorite(recipe.id)"
+                  >
+                    <v-icon small>
+                      {{ isFavorite(recipe.id) ? 'mdi-heart' : 'mdi-heart-outline' }}
+                    </v-icon>
                   </v-btn>
                 </div>
               </v-img>
@@ -168,6 +176,7 @@
 import apiService from "@/api/apiService";
 import TopHeader from "@/components/TopHeader";
 import BottomNav from "@/components/BottomNav";
+import { mapGetters, mapActions } from "vuex";
 
 export default {
   components: {
@@ -206,6 +215,7 @@ export default {
   }),
 
   computed: {
+    ...mapGetters(["isFavorite"]),
     activeCategoryName() {
       return this.categories[this.activeCategoryIndex].name.toLowerCase();
     },
@@ -225,6 +235,7 @@ export default {
   },
 
   methods: {
+    ...mapActions(["toggleFavorite"]),
     seeAllPopular() {
       this.seeAllActive = true;
       this.activeCategoryIndex = -1;
@@ -313,6 +324,16 @@ export default {
   margin: 0;
   padding: 0;
   display: block;
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 100;
+  background-color: #f8f9fa;
+}
+
+.content-below-header {
+  padding-top: 110px !important;
 }
 
 .category-section {
@@ -605,6 +626,13 @@ export default {
 
   ::v-deep .v-icon {
     color: #5db9b4;
+    transition: all 0.2s ease;
+  }
+
+  &.is-favorite {
+    ::v-deep .v-icon {
+      color: #e74c3c;
+    }
   }
 }
 
